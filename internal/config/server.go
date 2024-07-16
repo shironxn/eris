@@ -4,17 +4,20 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	https "github.com/shironxn/eris/internal/infrastructure/http"
 )
 
 type Server struct {
-	Host string
-	Port string
+	Host   string
+	Port   string
+	Router https.Router
 }
 
 func NewServer(cfg Server) *Server {
 	return &Server{
-		Host: cfg.Host,
-		Port: cfg.Port,
+		Host:   cfg.Host,
+		Port:   cfg.Port,
+		Router: cfg.Router,
 	}
 }
 
@@ -33,7 +36,7 @@ func (s *Server) Run() error {
 
 	server := &http.Server{
 		Addr:    ":" + s.Port,
-		Handler: router,
+		Handler: s.Router.Route(),
 	}
 
 	return server.ListenAndServe()
