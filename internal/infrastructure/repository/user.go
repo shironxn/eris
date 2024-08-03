@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User interface {
+type UserRepository interface {
 	Create(req model.Register) error
 	GetAll() ([]model.User, error)
 	GetByID(id uint) (*model.User, error)
@@ -18,7 +18,7 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) User {
+func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{
 		db: db,
 	}
@@ -53,10 +53,7 @@ func (u *userRepository) GetByEmail(email string) (*model.User, error) {
 }
 
 func (u *userRepository) Update(req model.User, user model.User) error {
-	if err := u.db.Model(&user).Updates(&req).Error; err != nil {
-		return err
-	}
-	return nil
+	return u.db.Model(&user).Updates(&req).Error
 }
 
 func (u *userRepository) Delete(id uint) error {

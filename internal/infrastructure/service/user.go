@@ -1,14 +1,12 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/shironxn/eris/internal/app/model"
 	"github.com/shironxn/eris/internal/infrastructure/repository"
 	"github.com/shironxn/eris/internal/infrastructure/util"
 )
 
-type User interface {
+type UserService interface {
 	Login(req model.Login) error
 	Register(req model.Register) error
 	GetAll() ([]model.User, error)
@@ -17,17 +15,17 @@ type User interface {
 	Delete(id uint) error
 }
 
-type user struct {
-	repository repository.User
+type userService struct {
+	repository repository.UserRepository
 }
 
-func NewUserService(repository repository.User) User {
-	return &user{
+func NewUserService(repository repository.UserRepository) UserService {
+	return &userService{
 		repository: repository,
 	}
 }
 
-func (u *user) Login(req model.Login) error {
+func (u *userService) Login(req model.Login) error {
 	user, err := u.repository.GetByEmail(req.Email)
 	if err != nil {
 		return err
@@ -40,7 +38,7 @@ func (u *user) Login(req model.Login) error {
 	return nil
 }
 
-func (u *user) Register(req model.Register) error {
+func (u *userService) Register(req model.Register) error {
 	password, err := util.HashPassword(req.Password)
 	if err != nil {
 		return err
@@ -51,15 +49,15 @@ func (u *user) Register(req model.Register) error {
 	return u.repository.Create(req)
 }
 
-func (u *user) GetAll() ([]model.User, error) {
+func (u *userService) GetAll() ([]model.User, error) {
 	return u.repository.GetAll()
 }
 
-func (u *user) GetByID(id uint) (*model.User, error) {
+func (u *userService) GetByID(id uint) (*model.User, error) {
 	return u.repository.GetByID(id)
 }
 
-func (u *user) Update(req model.User) error {
+func (u *userService) Update(req model.User) error {
 	user, err := u.repository.GetByID(req.ID)
 	if err != nil {
 		return err
@@ -68,6 +66,6 @@ func (u *user) Update(req model.User) error {
 	return u.repository.Update(req, *user)
 }
 
-func (u *user) Delete(id uint) error {
+func (u *userService) Delete(id uint) error {
 	return u.repository.Delete(id)
 }
