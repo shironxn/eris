@@ -25,7 +25,12 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (u *userRepository) Create(req model.Register) error {
-	return u.db.Create(&req).Error
+  user := model.User{
+    Name: req.Name,
+    Email: req.Email,
+    Password: req.Password,
+  }
+  return u.db.Create(&user).Error
 }
 
 func (u *userRepository) GetAll() ([]model.User, error) {
