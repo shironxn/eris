@@ -66,11 +66,21 @@ func (u *userController) GetAll(c *gin.Context) {
 		view.JSON(c, http.StatusInternalServerError, err.Error())
 	}
 
-	view.JSON(c, http.StatusOK, data)
+	var users []model.UserResponse
+	for _, user := range data {
+		users = append(users, model.UserResponse{
+			ID:        user.ID,
+			Name:      user.Name,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		})
+	}
+
+	view.JSON(c, http.StatusOK, users)
 }
 
 func (u *userController) GetByID(c *gin.Context) {
-	var req model.User
+	var req model.UserUri
 
 	if err := c.ShouldBindUri(&req); err != nil {
 		view.JSON(c, http.StatusBadRequest, err.Error())
@@ -83,11 +93,16 @@ func (u *userController) GetByID(c *gin.Context) {
 		return
 	}
 
-	view.JSON(c, http.StatusOK, data)
+	view.JSON(c, http.StatusOK, model.UserResponse{
+		ID:        data.ID,
+		Name:      data.Name,
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
+	})
 }
 
 func (u *userController) Update(c *gin.Context) {
-	var req model.User
+	var req model.UserUpdate
 
 	if err := c.ShouldBindUri(&req); err != nil {
 		view.JSON(c, http.StatusBadRequest, err.Error())
@@ -108,7 +123,7 @@ func (u *userController) Update(c *gin.Context) {
 }
 
 func (u *userController) Delete(c *gin.Context) {
-	var req model.User
+	var req model.UserUri
 
 	if err := c.ShouldBindUri(&req); err != nil {
 		view.JSON(c, http.StatusBadRequest, err.Error())

@@ -11,7 +11,7 @@ type UserService interface {
 	Register(req model.Register) error
 	GetAll() ([]model.User, error)
 	GetByID(id uint) (*model.User, error)
-	Update(req model.User) error
+	Update(req model.UserUpdate) error
 	Delete(id uint) error
 }
 
@@ -57,7 +57,7 @@ func (u *userService) GetByID(id uint) (*model.User, error) {
 	return u.repository.GetByID(id)
 }
 
-func (u *userService) Update(req model.User) error {
+func (u *userService) Update(req model.UserUpdate) error {
 	user, err := u.repository.GetByID(req.ID)
 	if err != nil {
 		return err
