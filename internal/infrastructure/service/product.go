@@ -6,10 +6,10 @@ import (
 )
 
 type ProductService interface {
-	Create(req model.Product) error
+	Create(req model.ProductCreate) error
 	GetAll() ([]model.Product, error)
 	GetByID(id uint) (*model.Product, error)
-	Update(req model.Product) error
+	Update(req model.ProductUpdate) error
 	Delete(id uint) error
 }
 
@@ -23,7 +23,7 @@ func NewProductService(repository repository.ProductRepository) ProductService {
 	}
 }
 
-func (p *productService) Create(req model.Product) error {
+func (p *productService) Create(req model.ProductCreate) error {
 	return p.repository.Create(req)
 }
 
@@ -35,7 +35,7 @@ func (p *productService) GetByID(id uint) (*model.Product, error) {
 	return p.repository.GetByID(id)
 }
 
-func (p *productService) Update(req model.Product) error {
+func (p *productService) Update(req model.ProductUpdate) error {
 	product, err := p.repository.GetByID(req.ID)
 	if err != nil {
 		return err

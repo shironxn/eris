@@ -18,10 +18,15 @@ type CategoryResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type CategoryUri struct {
+	ID uint `uri:"id" binding:"required"`
+}
+
 type CategoryCreate struct {
 	Name string `form:"name" binding:"required"`
 }
 
 type CategoryUpdate struct {
-	Name string `form:"name" binding:"required"`
+	ID   uint   `uri:"id" binding:"required"`
+	Name string `form:"name" binding:"omitempty,required"`
 }

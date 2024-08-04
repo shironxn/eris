@@ -6,10 +6,10 @@ import (
 )
 
 type CategoryService interface {
-	Create(req model.Category) error
+	Create(req model.CategoryCreate) error
 	GetAll() ([]model.Category, error)
 	GetByID(id uint) (*model.Category, error)
-	Update(req model.Category) error
+	Update(req model.CategoryUpdate) error
 	Delete(id uint) error
 }
 
@@ -23,7 +23,7 @@ func NewCategoryService(repository repository.CategoryRepository) CategoryServic
 	}
 }
 
-func (c *categoryService) Create(req model.Category) error {
+func (c *categoryService) Create(req model.CategoryCreate) error {
 	return c.repository.Create(req)
 }
 
@@ -35,7 +35,7 @@ func (c *categoryService) GetByID(id uint) (*model.Category, error) {
 	return c.repository.GetByID(id)
 }
 
-func (c *categoryService) Update(req model.Category) error {
+func (c *categoryService) Update(req model.CategoryUpdate) error {
 	category, err := c.repository.GetByID(req.ID)
 	if err != nil {
 		return err

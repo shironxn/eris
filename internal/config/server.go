@@ -1,14 +1,13 @@
 package config
 
 import (
-	"net/http"
-
 	"github.com/shironxn/eris/internal/app/controller"
 	"github.com/shironxn/eris/internal/app/model"
 	https "github.com/shironxn/eris/internal/infrastructure/http"
 	"github.com/shironxn/eris/internal/infrastructure/repository"
 	"github.com/shironxn/eris/internal/infrastructure/service"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type Server struct {
@@ -32,9 +31,21 @@ func (s *Server) Run() error {
 	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(userService)
 
-	router := https.NewRouter(userController)
+	productRepository := repository.NewProductRepository(s.db)
+	productService := service.NewProductService(productRepository)
+	productController := controller.NewProducController(productService)
 
-  s.db.AutoMigrate(&model.User{}, &model.Product{}, &model.Category{})
+	categoryRepository := repository.NewCategoryRepository(s.db)
+	categoryService := service.NewCategoryService(categoryRepository)
+	categoryController := controller.NewCategoryController(categoryService)
+
+	router := https.NewRouter(https.Router{
+		User:     userController,
+		Product:  productController,
+		Category: categoryController,
+	})
+
+	s.db.AutoMigrate(&model.User{}, &model.Product{}, &model.Category{})
 	server := &http.Server{
 		Addr:    ":" + s.Port,
 		Handler: router.Route(),

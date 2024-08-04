@@ -10,12 +10,12 @@ import (
 )
 
 type UserController interface {
-	Login(c *gin.Context)
-	Register(c *gin.Context)
-	GetAll(c *gin.Context)
-	GetByID(c *gin.Context)
-	Update(c *gin.Context)
-	Delete(c *gin.Context)
+	Login(ctx *gin.Context)
+	Register(ctx *gin.Context)
+	GetAll(ctx *gin.Context)
+	GetByID(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type userController struct {
@@ -28,42 +28,42 @@ func NewUserController(service service.UserService) UserController {
 	}
 }
 
-func (u *userController) Login(c *gin.Context) {
+func (u *userController) Login(ctx *gin.Context) {
 	var req model.Login
 
-	if err := c.ShouldBind(&req); err != nil {
-		view.JSON(c, http.StatusBadRequest, err.Error())
+	if err := ctx.ShouldBind(&req); err != nil {
+		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := u.service.Login(req); err != nil {
-		view.JSON(c, http.StatusInternalServerError, err.Error())
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	view.JSON(c, http.StatusOK, nil)
+	view.JSON(ctx, http.StatusOK, nil)
 }
 
-func (u *userController) Register(c *gin.Context) {
+func (u *userController) Register(ctx *gin.Context) {
 	var req model.Register
 
-	if err := c.ShouldBind(&req); err != nil {
-		view.JSON(c, http.StatusBadRequest, err.Error())
+	if err := ctx.ShouldBind(&req); err != nil {
+		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := u.service.Register(req); err != nil {
-		view.JSON(c, http.StatusInternalServerError, err.Error())
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	view.JSON(c, http.StatusCreated, nil)
+	view.JSON(ctx, http.StatusCreated, nil)
 }
 
-func (u *userController) GetAll(c *gin.Context) {
+func (u *userController) GetAll(ctx *gin.Context) {
 	data, err := u.service.GetAll()
 	if err != nil {
-		view.JSON(c, http.StatusInternalServerError, err.Error())
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 	}
 
 	var users []model.UserResponse
@@ -76,24 +76,24 @@ func (u *userController) GetAll(c *gin.Context) {
 		})
 	}
 
-	view.JSON(c, http.StatusOK, users)
+	view.JSON(ctx, http.StatusOK, users)
 }
 
-func (u *userController) GetByID(c *gin.Context) {
+func (u *userController) GetByID(ctx *gin.Context) {
 	var req model.UserUri
 
-	if err := c.ShouldBindUri(&req); err != nil {
-		view.JSON(c, http.StatusBadRequest, err.Error())
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	data, err := u.service.GetByID(req.ID)
 	if err != nil {
-		view.JSON(c, http.StatusInternalServerError, err.Error())
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	view.JSON(c, http.StatusOK, model.UserResponse{
+	view.JSON(ctx, http.StatusOK, model.UserResponse{
 		ID:        data.ID,
 		Name:      data.Name,
 		CreatedAt: data.CreatedAt,
@@ -101,39 +101,39 @@ func (u *userController) GetByID(c *gin.Context) {
 	})
 }
 
-func (u *userController) Update(c *gin.Context) {
+func (u *userController) Update(ctx *gin.Context) {
 	var req model.UserUpdate
 
-	if err := c.ShouldBindUri(&req); err != nil {
-		view.JSON(c, http.StatusBadRequest, err.Error())
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := c.ShouldBind(&req); err != nil {
-		view.JSON(c, http.StatusBadRequest, err.Error())
+	if err := ctx.ShouldBind(&req); err != nil {
+		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := u.service.Update(req); err != nil {
-		view.JSON(c, http.StatusInternalServerError, err.Error())
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	view.JSON(c, http.StatusOK, nil)
+	view.JSON(ctx, http.StatusOK, nil)
 }
 
-func (u *userController) Delete(c *gin.Context) {
+func (u *userController) Delete(ctx *gin.Context) {
 	var req model.UserUri
 
-	if err := c.ShouldBindUri(&req); err != nil {
-		view.JSON(c, http.StatusBadRequest, err.Error())
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := u.service.Delete(req.ID); err != nil {
-		view.JSON(c, http.StatusInternalServerError, err.Error())
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	view.JSON(c, http.StatusOK, nil)
+	view.JSON(ctx, http.StatusOK, nil)
 }

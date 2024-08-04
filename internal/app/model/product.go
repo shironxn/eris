@@ -30,14 +30,21 @@ type ProductResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type ProductUri struct {
+	ID uint `uri:"id" binding:"required"`
+}
+
 type ProductCreate struct {
 	Name        string `form:"name" binding:"required,min=2,max=100"`
 	Description string `form:"description,omitempty"`
 	Price       int    `form:"price" binding:"required,min=0"`
 	Stock       int    `form:"stock" binding:"required,min=0"`
+	UserID      uint   `form:"user_id" binding:"required"`
+	CategoryID  uint   `form:"category_id" binding:"required"`
 }
 
 type ProductUpdate struct {
+	ID          uint   `uri:"id" binding:"required"`
 	Name        string `form:"name" binding:"omitempty,min=2,max=100"`
 	Description string `form:"description,omitempty"`
 	Price       int    `form:"price" binding:"omitempty,min=0"`
