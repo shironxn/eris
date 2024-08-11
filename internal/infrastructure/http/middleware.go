@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -25,28 +24,30 @@ func (m *Middleware) Auth() gin.HandlerFunc {
 		refreshToken, err := ctx.Cookie("refresh-token")
 		if err != nil {
 			view.JSON(ctx, http.StatusUnauthorized, nil)
+			ctx.Abort()
 			return
 		}
 
 		claims, err := m.JWT.ValidateToken(refreshToken, m.JWT.Refresh)
 		if err != nil {
 			view.JSON(ctx, http.StatusUnauthorized, nil)
+			ctx.Abort()
 			return
 		}
 
 		accessToken, err := ctx.Cookie("access-token")
-		fmt.Println(accessToken)
-
 		if err != nil || accessToken == "" {
 			accessToken, err := m.JWT.GenerateAccessToken(claims.UserID)
 			if err != nil {
 				view.JSON(ctx, http.StatusUnauthorized, nil)
+				ctx.Abort()
 				return
 			}
 
 			_, err = m.JWT.ValidateToken(accessToken, m.JWT.Access)
 			if err != nil {
 				view.JSON(ctx, http.StatusUnauthorized, nil)
+				ctx.Abort()
 				return
 			}
 

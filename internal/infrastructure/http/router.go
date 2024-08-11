@@ -28,13 +28,11 @@ func NewRouter(controllers Controllers, middleware Middleware) *Router {
 func (r *Router) Route() http.Handler {
 	router := gin.Default()
 
-	router.Use(r.Middleware.Auth())
-
 	v1 := router.Group("/api/v1")
 	auth := v1.Group("/auth")
-	user := v1.Group("/users")
-	product := v1.Group("/products")
-	category := v1.Group("/categories")
+	user := v1.Group("/users", r.Middleware.Auth())
+	product := v1.Group("/products", r.Middleware.Auth())
+	category := v1.Group("/categories", r.Middleware.Auth())
 
 	// Auth routes
 	auth.POST("/login", r.Controller.User.Login)

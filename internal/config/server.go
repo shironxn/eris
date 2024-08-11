@@ -31,9 +31,6 @@ func NewServer(server Server, db *gorm.DB) *Server {
 }
 
 func (s *Server) Run() error {
-	jwt := util.NewJWT(s.jwt)
-
-	middleware := https.NewMiddleware(jwt)
 
 	userRepository := repository.NewUserRepository(s.db)
 	userService := service.NewUserService(userRepository)
@@ -46,6 +43,10 @@ func (s *Server) Run() error {
 	categoryRepository := repository.NewCategoryRepository(s.db)
 	categoryService := service.NewCategoryService(categoryRepository)
 	categoryController := controller.NewCategoryController(categoryService)
+
+	jwt := util.NewJWT(s.jwt)
+
+	middleware := https.NewMiddleware(jwt)
 
 	router := https.NewRouter(
 		https.Controllers{
@@ -60,7 +61,7 @@ func (s *Server) Run() error {
 
 	s.db.AutoMigrate(&model.User{}, &model.Product{}, &model.Category{})
 	server := &http.Server{
-		Addr:    ":" + s.Host,
+		Addr:    s.Host + ":" + s.Port,
 		Handler: router.Route(),
 	}
 
