@@ -1,32 +1,40 @@
 package config
 
 import (
+	"net/http"
+
 	"github.com/shironxn/eris/internal/app/controller"
 	"github.com/shironxn/eris/internal/app/model"
 	https "github.com/shironxn/eris/internal/infrastructure/http"
 	"github.com/shironxn/eris/internal/infrastructure/repository"
 	"github.com/shironxn/eris/internal/infrastructure/service"
+	"github.com/shironxn/eris/internal/infrastructure/util"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 type Server struct {
 	Host   string
 	Port   string
-	Router https.Router
+	jwt    util.JWT
+	router https.Router
 	db     *gorm.DB
 }
 
-func NewServer(cfg Server, db *gorm.DB) *Server {
+func NewServer(server Server, db *gorm.DB) *Server {
 	return &Server{
-		Host:   cfg.Host,
-		Port:   cfg.Port,
-		Router: cfg.Router,
+		Host:   server.Host,
+		Port:   server.Port,
+		jwt:    server.jwt,
+		router: server.router,
 		db:     db,
 	}
 }
 
 func (s *Server) Run() error {
+	jwt := util.NewJWT(s.jwt)
+
+	middleware := https.NewMiddleware(jwt)
+
 	userRepository := repository.NewUserRepository(s.db)
 	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(userService)
@@ -39,15 +47,20 @@ func (s *Server) Run() error {
 	categoryService := service.NewCategoryService(categoryRepository)
 	categoryController := controller.NewCategoryController(categoryService)
 
-	router := https.NewRouter(https.Router{
-		User:     userController,
-		Product:  productController,
-		Category: categoryController,
-	})
+	router := https.NewRouter(
+		https.Controllers{
+			User:     userController,
+			Product:  productController,
+			Category: categoryController,
+		},
+		https.Middleware{
+			JWT: middleware.JWT,
+		},
+	)
 
 	s.db.AutoMigrate(&model.User{}, &model.Product{}, &model.Category{})
 	server := &http.Server{
-		Addr:    ":" + s.Port,
+		Addr:    ":" + s.Host,
 		Handler: router.Route(),
 	}
 

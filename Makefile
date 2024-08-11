@@ -39,7 +39,7 @@ test: ## Run tests
 .PHONY: dev
 dev: ## Run development environment
 	@echo "Running development environment..."
-	@air --build.cmd "go build -o $(BIN_DIR)/$(BIN) cmd/main.go" --build.bin "$(BIN_DIR)/$(BIN)"
+	@$(GOPATH)/bin/air --build.cmd "go build -o $(BIN_DIR)/$(BIN) cmd/main.go" --build.bin "$(BIN_DIR)/$(BIN)"
 
 .PHONY: build
 build: ## Build the project

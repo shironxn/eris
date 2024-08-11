@@ -8,21 +8,27 @@ import (
 )
 
 type Router struct {
+	Controller Controllers
+	Middleware Middleware
+}
+
+type Controllers struct {
 	User     controller.UserController
 	Product  controller.ProductController
 	Category controller.CategoryController
 }
 
-func NewRouter(r Router) *Router {
+func NewRouter(controllers Controllers, middleware Middleware) *Router {
 	return &Router{
-		User:     r.User,
-		Product:  r.Product,
-		Category: r.Category,
+		Controller: controllers,
+		Middleware: middleware,
 	}
 }
 
 func (r *Router) Route() http.Handler {
 	router := gin.Default()
+
+	router.Use(r.Middleware.Auth())
 
 	v1 := router.Group("/api/v1")
 	auth := v1.Group("/auth")
@@ -30,25 +36,29 @@ func (r *Router) Route() http.Handler {
 	product := v1.Group("/products")
 	category := v1.Group("/categories")
 
-	auth.POST("/login", r.User.Login)
-	auth.POST("/register", r.User.Register)
+	// Auth routes
+	auth.POST("/login", r.Controller.User.Login)
+	auth.POST("/register", r.Controller.User.Register)
 
-	user.GET("/", r.User.GetAll)
-	user.GET("/:id", r.User.GetByID)
-	user.PUT("/:id", r.User.Update)
-	user.DELETE("/:id", r.User.Delete)
+	// User routes
+	user.GET("/", r.Controller.User.GetAll)
+	user.GET("/:id", r.Controller.User.GetByID)
+	user.PUT("/:id", r.Controller.User.Update)
+	user.DELETE("/:id", r.Controller.User.Delete)
 
-	product.POST("/", r.Product.Create)
-	product.GET("/", r.Product.GetAll)
-	product.GET("/:id", r.Product.GetByID)
-	product.PUT("/:id", r.Product.Update)
-	product.DELETE("/:id", r.Product.Delete)
+	// Product routes
+	product.POST("/", r.Controller.Product.Create)
+	product.GET("/", r.Controller.Product.GetAll)
+	product.GET("/:id", r.Controller.Product.GetByID)
+	product.PUT("/:id", r.Controller.Product.Update)
+	product.DELETE("/:id", r.Controller.Product.Delete)
 
-	category.POST("/", r.Category.Create)
-	category.GET("/", r.Category.GetAll)
-	category.GET("/:id", r.Category.GetByID)
-	category.PUT("/:id", r.Category.Update)
-	category.DELETE("/:id", r.Category.Delete)
+	// Category routes
+	category.POST("/", r.Controller.Category.Create)
+	category.GET("/", r.Controller.Category.GetAll)
+	category.GET("/:id", r.Controller.Category.GetByID)
+	category.PUT("/:id", r.Controller.Category.Update)
+	category.DELETE("/:id", r.Controller.Category.Delete)
 
 	return router
 }
