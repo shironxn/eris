@@ -2,11 +2,13 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shironxn/eris/internal/app/model"
 	"github.com/shironxn/eris/internal/app/view"
 	"github.com/shironxn/eris/internal/infrastructure/service"
+	"github.com/shironxn/eris/internal/infrastructure/util"
 )
 
 type UserController interface {
@@ -20,6 +22,7 @@ type UserController interface {
 
 type userController struct {
 	service service.UserService
+	jwt     util.JWT
 }
 
 func NewUserController(service service.UserService) UserController {
@@ -36,10 +39,26 @@ func (u *userController) Login(ctx *gin.Context) {
 		return
 	}
 
-	if err := u.service.Login(req); err != nil {
+	data, err := u.service.Login(req)
+	if err != nil {
 		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	accessToken, err := u.jwt.GenerateAccessToken(data.ID)
+	if err != nil {
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	refreshToken, err := u.jwt.GenerateRefreshToken(data.ID)
+	if err != nil {
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.SetCookie("access-token", accessToken, int(time.Now().Add(10*time.Minute).Unix()), "/", "localhost", false, true)
+	ctx.SetCookie("refresh-token", refreshToken, int(time.Now().Add(24*time.Hour).Unix()), "/", "localhost", false, true)
 
 	view.JSON(ctx, http.StatusOK, nil)
 }

@@ -20,7 +20,7 @@ func NewJWT(jwt JWT) *JWT {
 	}
 }
 
-func (j JWT) GenerateAccessToken(userID uint) (string, error) {
+func (j *JWT) GenerateAccessToken(userID uint) (string, error) {
 	exp := time.Now().Add(10 * time.Minute)
 	claims := model.Claims{
 		UserID: userID,
@@ -28,10 +28,10 @@ func (j JWT) GenerateAccessToken(userID uint) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(exp),
 		},
 	}
-	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(j.Access)
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(j.Access))
 }
 
-func (j JWT) GenerateRefreshToken(userID uint) (string, error) {
+func (j *JWT) GenerateRefreshToken(userID uint) (string, error) {
 	exp := time.Now().Add(24 * time.Hour)
 	claims := model.Claims{
 		UserID: userID,
@@ -39,10 +39,10 @@ func (j JWT) GenerateRefreshToken(userID uint) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(exp),
 		},
 	}
-	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(j.Refresh)
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(j.Refresh))
 }
 
-func (j JWT) ValidateToken(token string, secret string) (*model.Claims, error) {
+func (j *JWT) ValidateToken(token string, secret string) (*model.Claims, error) {
 	tokenString, err := jwt.ParseWithClaims(token, &model.Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})

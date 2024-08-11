@@ -7,7 +7,7 @@ import (
 )
 
 type UserService interface {
-	Login(req model.Login) error
+	Login(req model.Login) (*model.User, error)
 	Register(req model.Register) error
 	GetAll() ([]model.User, error)
 	GetByID(id uint) (*model.User, error)
@@ -25,17 +25,17 @@ func NewUserService(repository repository.UserRepository) UserService {
 	}
 }
 
-func (u *userService) Login(req model.Login) error {
+func (u *userService) Login(req model.Login) (*model.User, error) {
 	user, err := u.repository.GetByEmail(req.Email)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := util.ComparePassword(req.Password, []byte(user.Password)); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return user, nil
 }
 
 func (u *userService) Register(req model.Register) error {

@@ -10,7 +10,6 @@ import (
 type App struct {
 	Server   Server
 	Database Database
-	JWT      util.JWT
 }
 
 func New() (*App, error) {
@@ -22,6 +21,10 @@ func New() (*App, error) {
 		Server: Server{
 			Host: os.Getenv("APP_HOST"),
 			Port: os.Getenv("APP_PORT"),
+			JWT: util.JWT{
+				Access:  os.Getenv("JWT_ACCESS"),
+				Refresh: os.Getenv("JWT_REFRESH"),
+			},
 		},
 		Database: Database{
 			Host: os.Getenv("DB_HOST"),
@@ -29,10 +32,6 @@ func New() (*App, error) {
 			Pass: os.Getenv("DB_PASS"),
 			Name: os.Getenv("DB_NAME"),
 			Port: os.Getenv("DB_PORT"),
-		},
-		JWT: util.JWT{
-			Access:  os.Getenv("JWT_ACCESS"),
-			Refresh: os.Getenv("JWT_REFRESH"),
 		},
 	}, nil
 }

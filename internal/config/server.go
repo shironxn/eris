@@ -15,38 +15,37 @@ import (
 type Server struct {
 	Host   string
 	Port   string
-	jwt    util.JWT
-	router https.Router
-	db     *gorm.DB
+	JWT    util.JWT
+	Router https.Router
+	DB     *gorm.DB
 }
 
 func NewServer(server Server, db *gorm.DB) *Server {
 	return &Server{
 		Host:   server.Host,
 		Port:   server.Port,
-		jwt:    server.jwt,
-		router: server.router,
-		db:     db,
+		JWT:    server.JWT,
+		Router: server.Router,
+		DB:     db,
 	}
 }
 
 func (s *Server) Run() error {
+	jwt := util.NewJWT(s.JWT)
+	middleware := https.NewMiddleware(*jwt)
 
-	userRepository := repository.NewUserRepository(s.db)
+	// Initializations
+	userRepository := repository.NewUserRepository(s.DB)
 	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(userService)
 
-	productRepository := repository.NewProductRepository(s.db)
+	productRepository := repository.NewProductRepository(s.DB)
 	productService := service.NewProductService(productRepository)
 	productController := controller.NewProducController(productService)
 
-	categoryRepository := repository.NewCategoryRepository(s.db)
+	categoryRepository := repository.NewCategoryRepository(s.DB)
 	categoryService := service.NewCategoryService(categoryRepository)
 	categoryController := controller.NewCategoryController(categoryService)
-
-	jwt := util.NewJWT(s.jwt)
-
-	middleware := https.NewMiddleware(jwt)
 
 	router := https.NewRouter(
 		https.Controllers{
@@ -59,7 +58,7 @@ func (s *Server) Run() error {
 		},
 	)
 
-	s.db.AutoMigrate(&model.User{}, &model.Product{}, &model.Category{})
+	s.DB.AutoMigrate(&model.User{}, &model.Product{}, &model.Category{})
 	server := &http.Server{
 		Addr:    s.Host + ":" + s.Port,
 		Handler: router.Route(),
