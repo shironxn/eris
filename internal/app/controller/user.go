@@ -25,9 +25,10 @@ type userController struct {
 	jwt     util.JWT
 }
 
-func NewUserController(service service.UserService) UserController {
+func NewUserController(service service.UserService, jwt util.JWT) UserController {
 	return &userController{
 		service: service,
+		jwt:     jwt,
 	}
 }
 

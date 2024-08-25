@@ -30,6 +30,7 @@ func (m *Middleware) Auth() gin.HandlerFunc {
 		}
 
 		fmt.Println(refreshToken)
+    fmt.Println(m.JWT.Refresh)
 
 		claims, err := m.JWT.ValidateToken(refreshToken, m.JWT.Refresh)
 		if err != nil {
@@ -37,8 +38,6 @@ func (m *Middleware) Auth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		fmt.Println("tes")
 
 		accessToken, err := ctx.Cookie("access-token")
 		if err != nil || accessToken == "" {

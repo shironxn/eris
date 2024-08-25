@@ -15,7 +15,12 @@ func main() {
 		panic(err)
 	}
 
-	if err := config.NewServer(cfg.Server, db).Run(); err != nil {
+	if err := config.NewServer(config.Server{
+		Host: cfg.Server.Host,
+		Port: cfg.Server.Port,
+		JWT:  cfg.Server.JWT,
+		DB:   db,
+	}).Run(); err != nil {
 		panic(err)
 	}
 }

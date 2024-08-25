@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -32,6 +33,8 @@ func (j *JWT) GenerateAccessToken(userID uint) (string, error) {
 }
 
 func (j *JWT) GenerateRefreshToken(userID uint) (string, error) {
+
+	fmt.Println(j.Refresh)
 	exp := time.Now().Add(24 * time.Hour)
 	claims := model.Claims{
 		UserID: userID,
