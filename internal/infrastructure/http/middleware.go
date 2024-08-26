@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -28,9 +27,6 @@ func (m *Middleware) Auth() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
-		fmt.Println(refreshToken)
-    fmt.Println(m.JWT.Refresh)
 
 		claims, err := m.JWT.ValidateToken(refreshToken, m.JWT.Refresh)
 		if err != nil {

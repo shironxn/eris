@@ -43,7 +43,7 @@ func (s *Server) Run() error {
 	categoryService := service.NewCategoryService(categoryRepository)
 
 	userController := controller.NewUserController(userService, *jwt)
-	productController := controller.NewProducController(productService)
+	productController := controller.NewProductController(productService)
 	categoryController := controller.NewCategoryController(categoryService)
 
 	router := https.NewRouter(

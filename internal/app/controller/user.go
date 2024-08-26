@@ -16,6 +16,7 @@ type UserController interface {
 	Register(ctx *gin.Context)
 	GetAll(ctx *gin.Context)
 	GetByID(ctx *gin.Context)
+	GetMe(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 }
@@ -108,6 +109,27 @@ func (u *userController) GetByID(ctx *gin.Context) {
 	}
 
 	data, err := u.service.GetByID(req.ID)
+	if err != nil {
+		view.JSON(ctx, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	view.JSON(ctx, http.StatusOK, model.UserResponse{
+		ID:        data.ID,
+		Name:      data.Name,
+		CreatedAt: data.CreatedAt,
+		UpdatedAt: data.UpdatedAt,
+	})
+}
+
+func (u *userController) GetMe(ctx *gin.Context) {
+	claims, ok := ctx.MustGet("claims").(*model.Claims)
+	if !ok {
+		view.JSON(ctx, http.StatusBadRequest, nil)
+		return
+	}
+
+	data, err := u.service.GetByID(claims.UserID)
 	if err != nil {
 		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return

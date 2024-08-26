@@ -21,7 +21,7 @@ type productController struct {
 	service service.ProductService
 }
 
-func NewProducController(service service.ProductService) ProductController {
+func NewProductController(service service.ProductService) ProductController {
 	return &productController{
 		service: service,
 	}
@@ -34,6 +34,13 @@ func (p *productController) Create(ctx *gin.Context) {
 		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
+
+  claims, ok := ctx.MustGet("claims").(*model.Claims)
+  if !ok {
+    view.JSON(ctx, http.StatusBadRequest, nil)
+    return
+  }
+  req.UserID = claims.UserID
 
 	if err := p.service.Create(req); err != nil {
 		view.JSON(ctx, http.StatusInternalServerError, err.Error())
@@ -107,6 +114,13 @@ func (p *productController) Update(ctx *gin.Context) {
 		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
+
+  claims, ok := ctx.MustGet("claims").(*model.Claims)
+  if !ok {
+    view.JSON(ctx, http.StatusBadRequest, nil)
+    return
+  }
+  req.UserID = claims.UserID
 
 	if err := p.service.Update(req); err != nil {
 		view.JSON(ctx, http.StatusInternalServerError, err.Error())

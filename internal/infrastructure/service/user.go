@@ -10,7 +10,7 @@ type UserService interface {
 	Login(req model.Login) (*model.User, error)
 	Register(req model.Register) error
 	GetAll() ([]model.User, error)
-	GetByID(id uint) (*model.User, error)
+  GetByID(id uint) (*model.User, error)
 	Update(req model.UserUpdate) error
 	Delete(id uint) error
 }

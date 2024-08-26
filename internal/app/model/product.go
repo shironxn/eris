@@ -39,7 +39,7 @@ type ProductCreate struct {
 	Description string `form:"description,omitempty"`
 	Price       int    `form:"price" binding:"required,min=0"`
 	Stock       int    `form:"stock" binding:"required,min=0"`
-	UserID      uint   `form:"user_id" binding:"required"`
+	UserID      uint   
 	CategoryID  uint   `form:"category_id" binding:"required"`
 }
 
@@ -49,4 +49,6 @@ type ProductUpdate struct {
 	Description string `form:"description,omitempty"`
 	Price       int    `form:"price" binding:"omitempty,min=0"`
 	Stock       int    `form:"stock" binding:"omitempty,min=0"`
+  UserID uint
+	CategoryID  uint   `form:"category_id"`
 }

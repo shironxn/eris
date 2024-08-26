@@ -41,6 +41,7 @@ func (r *Router) Route() http.Handler {
 	// User routes
 	user.GET("/", r.Controller.User.GetAll)
 	user.GET("/:id", r.Controller.User.GetByID)
+	user.GET("/me", r.Controller.User.GetMe)
 	user.PUT("/:id", r.Controller.User.Update)
 	user.DELETE("/:id", r.Controller.User.Delete)
 
