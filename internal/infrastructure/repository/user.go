@@ -13,7 +13,7 @@ type UserRepository interface {
 	GetByID(id uint) (*model.User, error)
 	GetByEmail(email string) (*model.User, error)
 	Update(req model.UserUpdate, user model.User) error
-	Delete(id uint) error
+	Delete(user *model.User) error
 }
 
 type userRepository struct {
@@ -64,6 +64,6 @@ func (u *userRepository) Update(req model.UserUpdate, user model.User) error {
 	return u.db.Model(&user).Updates(&req).Error
 }
 
-func (u *userRepository) Delete(id uint) error {
-	return u.db.Delete(&model.User{}, id).Error
+func (u *userRepository) Delete(user *model.User) error {
+	return u.db.Delete(&user).Error
 }

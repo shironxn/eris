@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/shironxn/eris/internal/app/model"
 	"github.com/shironxn/eris/internal/infrastructure/repository"
 	"github.com/shironxn/eris/internal/infrastructure/util"
@@ -10,9 +12,9 @@ type UserService interface {
 	Login(req model.Login) (*model.User, error)
 	Register(req model.Register) error
 	GetAll() ([]model.User, error)
-  GetByID(id uint) (*model.User, error)
-	Update(req model.UserUpdate) error
-	Delete(id uint) error
+	GetByID(id uint) (*model.User, error)
+	Update(req model.UserUpdate, claims *model.Claims) error
+	Delete(id uint, claims *model.Claims) error
 }
 
 type userService struct {
@@ -57,15 +59,28 @@ func (u *userService) GetByID(id uint) (*model.User, error) {
 	return u.repository.GetByID(id)
 }
 
-func (u *userService) Update(req model.UserUpdate) error {
+func (u *userService) Update(req model.UserUpdate, claims *model.Claims) error {
 	user, err := u.repository.GetByID(req.ID)
 	if err != nil {
 		return err
 	}
 
+	if user.ID != claims.UserID {
+		return errors.New("invalid user id")
+	}
+
 	return u.repository.Update(req, *user)
 }
 
-func (u *userService) Delete(id uint) error {
-	return u.repository.Delete(id)
+func (u *userService) Delete(id uint, claims *model.Claims) error {
+	user, err := u.repository.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	if user.ID != claims.UserID {
+		return errors.New("invalid user id")
+	}
+
+	return u.repository.Delete(user)
 }

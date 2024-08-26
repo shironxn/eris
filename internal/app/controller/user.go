@@ -156,7 +156,13 @@ func (u *userController) Update(ctx *gin.Context) {
 		return
 	}
 
-	if err := u.service.Update(req); err != nil {
+	claims, ok := ctx.MustGet("claims").(*model.Claims)
+	if !ok {
+		view.JSON(ctx, http.StatusBadRequest, nil)
+		return
+	}
+
+	if err := u.service.Update(req, claims); err != nil {
 		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -172,7 +178,13 @@ func (u *userController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := u.service.Delete(req.ID); err != nil {
+	claims, ok := ctx.MustGet("claims").(*model.Claims)
+	if !ok {
+		view.JSON(ctx, http.StatusBadRequest, nil)
+		return
+	}
+
+	if err := u.service.Delete(req.ID, claims); err != nil {
 		view.JSON(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
