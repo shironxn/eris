@@ -37,7 +37,7 @@ type Register struct {
 }
 
 type UserUpdate struct {
-	ID       uint   `uri:"id" binding:"requird"`
+	ID       uint   `uri:"id" binding:"required"`
 	Name     string `form:"name" binding:"omitempty,min=4,max=30"`
 	Email    string `form:"email" binding:"omitempty,email"`
 	Password string `form:"password" binding:"omitempty,min=8,max=30"`

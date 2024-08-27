@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/shironxn/eris/internal/app/model"
 	"gorm.io/gorm"
 )
@@ -48,7 +46,6 @@ func (u *userRepository) GetByID(id uint) (*model.User, error) {
 	if err := u.db.First(&user, id).Error; err != nil {
 		return nil, err
 	}
-	fmt.Println(user)
 	return &user, nil
 }
 

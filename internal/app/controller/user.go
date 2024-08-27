@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -150,6 +151,8 @@ func (u *userController) Update(ctx *gin.Context) {
 		view.JSON(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
+
+fmt.Println(req.ID)
 
 	if err := ctx.ShouldBind(&req); err != nil {
 		view.JSON(ctx, http.StatusBadRequest, err.Error())
