@@ -14,6 +14,12 @@ type User struct {
 	Products []Product
 }
 
+type UserToken struct {
+	UserID    uint   `gorm:"primaryKey"`
+	Token     string `gorm:"not null"`
+	CreatedAt time.Time
+}
+
 type UserResponse struct {
 	ID        uint      `json:"id"`
 	Name      string    `json:"name"`
